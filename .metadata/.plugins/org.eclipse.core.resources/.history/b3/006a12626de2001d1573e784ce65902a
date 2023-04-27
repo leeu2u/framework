@@ -1,0 +1,5 @@
+package deu.kh.comm.member.model.service;
+
+public interface MemberService {
+
+}
