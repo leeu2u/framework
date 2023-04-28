@@ -31,6 +31,14 @@
     <version>2.9.0</version>
 </dependency>
 	
+	<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
+	<dependency>
+    	<groupId>commons-fileupload</groupId>
+    	<artifactId>commons-fileupload</artifactId>
+    	<version>1.4</version>
+	</dependency>
+	
+	
 	<!-- 스토리지의 73% 사용됨 … Drive에 저장하고, Google 포토에 백업하고, Gmail에서 이메일을 주고받을 때 스토리지를 사용합니다. -->
 	
 	<!-- Spring -security 모듈 추가 -->

@@ -330,16 +330,24 @@ public class MemberController {
 	
 	//@ModelAttribute vo타입 변수명
 	@PostMapping("/signUp")
-	public String signUp(@ModelAttribute Member memberSignUp, Model model) {
-	    Member signUpMember = service.signUp(memberSignUp);
+	public String signUp(@ModelAttribute Member memberSignUp, RedirectAttributes ra) {
+	    int result = service.signUp(memberSignUp);
+	    
+	    String message=null;
+	    String path = null;
 
-	    if (signUpMember != null) { // 회원가입 성공 시
+	    if (result > 0 ) { // 회원가입 성공 시
+	    	message="회원 가입 성공";
 	        return "redirect:/";
 	    } else { // 회원가입 실패 시
-	        model.addAttribute("errorMessage", "회원가입에 실패했습니다.");
-	        return "member/signUp";
+	    	message="회원 가입 실패";
+	    	path="redirect: /member/signtUp";
 	    }
+	    
+	    ra.addFlashAttribute("message", message);
+		return path;
 	}
+
 
 	
 //	@PostMapping("/signUp")

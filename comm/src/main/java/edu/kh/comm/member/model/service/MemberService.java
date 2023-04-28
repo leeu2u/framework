@@ -51,16 +51,23 @@ public interface MemberService {
 	 * @param memberSignUp
 	 * @return
 	 */
-	public abstract Member signUp(Member memberSignUp);
+	public abstract int signUp(Member memberSignUp);
 
 
 
 
+	/** 전체 회원 정보 가져오기
+	 * @return
+	 */
 	public abstract List<Member> memList();
 
 
 
 
+	/** 1명 회원 정보 가져오기
+	 * @param memberEmail
+	 * @return
+	 */
 	public abstract Member selectOne(String memberEmail);
 	
 
