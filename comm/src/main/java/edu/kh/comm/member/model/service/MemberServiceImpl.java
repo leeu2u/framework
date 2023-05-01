@@ -120,27 +120,18 @@ public class MemberServiceImpl implements MemberService {
 		return dao.nicknameDupCheck(memberNickname); //dao 호출
 	}
 	
-	
 	//회원가입
 	@Override
-	public Member signUp(Member memberSignUp) {
+	public int signUp(Member memberSignUp) {
+	    //회원 정보를 DB에 저장
 		
-		int result = dao.signUp(memberSignUp);
+		memberSignUp.setMemberPw(bcrypt.encode(memberSignUp.getMemberPw()));
 		
-		if(result > 0) {
-			//비밀번호 암호화
-			memberSignUp.setMemberPw(bcrypt.encode(memberSignUp.getMemberPw()));
-			
-			return memberSignUp;
-			
-		}else {
-			
-			return null;
-			
-		}
-	}
-	
+	    	return dao.signUp(memberSignUp);
 
+	}
+
+	
 	
 	
 	//한명 회원목록 조회

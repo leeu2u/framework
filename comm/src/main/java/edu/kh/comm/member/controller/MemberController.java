@@ -66,6 +66,7 @@ public class MemberController {
 	
 	//4.로거 만들기
 	private Logger logger = LoggerFactory.getLogger(MemberController.class);
+	
 	//-------------------------------------------------
 	
 //	//service, dao 불러오기
@@ -225,6 +226,7 @@ public class MemberController {
 		
 		if(loginMember != null) { //로그인 성공 시
 			model.addAttribute("loginMember", loginMember);
+			//== req.setAttribute("loginMember", loginMember);
 			
 			//로그인 성공 시 무조건 쿠키 생성
 			//단, 아이디 저장 체크 여부에 따라서 쿠키의 유지 시간을 조정
@@ -281,11 +283,15 @@ public class MemberController {
 		
 		logger.info("로그아웃 수행됨");
 		
+		
+		//@SessionAttributes을이용해서 session scope에 배치된 데이터는
+		//SessionStatus라는 별도 객체를 이용해야만 없앨 수 있다.
+		
 		//session.invalidate(); // 기존 세션 무효화 방식으로는 안된다
 		status.setComplete(); //세션이 할 일이 완료됨 -> 없앰
 		
 		
-		return "redirect:/";
+		return "redirect:/"; //메인페이지로 리다이렉
 	}
 
 	
@@ -301,7 +307,7 @@ public class MemberController {
 	//이메일 중복 검사 
 //	public String emailDupCheck(@RequstParam("memberEamil") String memberEmail)
 	public int emailDupCheck(String memberEmail){
-//		int result = service.emailDupCheck();
+		int result = service.emailDupCheck(memberEmail);
 		
 		/*
 		 * 컨트롤러에서 반환되는 값은 forward 또는 redirect를 위한 경로인 경우가 일반적
@@ -314,7 +320,7 @@ public class MemberController {
 		 * -> 컨트롤러에서 반환되는 값이 경로가 아니라 '값 자체'로 인식됨
 		 */
 		
-		return service.emailDupCheck(memberEmail);
+		return result;
 	}
 	
 	//닉네임 중복 검사
@@ -322,76 +328,77 @@ public class MemberController {
 	@ResponseBody
 	@GetMapping("/nicknameDupCheck")
 	public int nicknameDupCheck(String memberNickname) { //ajax로 돌려줘야해서 int
-		return service.nicknameDupCheck(memberNickname);
+		int result = service.nicknameDupCheck(memberNickname);
+		
+		return result;
 	}
-	
-	
-	//회원가입 (sqlSession.insert()) --> <insert></insert>
-	
-	//@ModelAttribute vo타입 변수명
-	@PostMapping("/signUp")
-	public String signUp(@ModelAttribute Member memberSignUp, Model model) {
-	    Member signUpMember = service.signUp(memberSignUp);
-
-	    if (signUpMember != null) { // 회원가입 성공 시
-	        return "redirect:/";
-	    } else { // 회원가입 실패 시
-	        model.addAttribute("errorMessage", "회원가입에 실패했습니다.");
-	        return "member/signUp";
-	    }
-	}
-
-	
-//	@PostMapping("/signUp")
-//				//name값이 일치해서 Member 파라미터랑 vo필더값이랑 같음 @ModelAttribute
-//	public String signUp(Member inputMember,String[] memberAddres, RedirectAttributes ra) { //주소만 따로 배열로 받아준다. 
-//		//주소는 name="memberAddress"이 세개가 같기 때문에 String으로 합쳐서 들어온다. 
-//		// -> 나중에 수정할때 한꺼번에 db에서 불러오면 수정하기가 어렵다. 
-//		// 그래서 구분자가 필요하다. 그래서 배열로 받아옴
-//		/*
-//		 * 같은 name을 가진 주소가 하나의 문자열로 합쳐서 세팅되어 있다.
-//		 * -> 도로명 주소에 ","기호가 포함되는 경우가 있어 이를 구분자로 사용할 수 없다.
-//		 * String[] memberAddress:
-//		 * name이 memberAddress인 파라미터의 값을 모두 배열에 담아서 반환하고 있다.
-//		 * 
-//		 */
-//		
-//		inputMember.setMemberAddress(String.join(",,", memberAddres));//-> setMemberAddress에 세팅
-//		
-//		//String.join("구분자", 배열)
-//		//배열을 하나의 문자열로 합치는 메서드
-//		//주간에 구분자가 포함되어 문자열이 생성된다.
-//		// [a,b,c] -> join진행 -> "a,,b,,c"로 나온다
-//		
-//		if(inputMember.getMemberAddress().equals(",,,,")) {//주소가 입력되지 않은 경우
-//			inputMember.setMemberAddress(null); //주소 입력하지 않았으면 null로 변환하겠다!
-//		}
-//		
-//		//회원가입 서비스 호출
-//		int result = service.signUp(inputMember);
-//		
-//		String message = null;
-//		String path = null;
-//		
-//		//회원 가입 성공 시 -> 메인 페이지로
-//		if(result > 0) {
-//			
-//			message="회원 가입 성공";
-//			path ="redirect:/"; //메인페이지
-//		}else {
-//			//실패 시 -> 회원가입 페이지
-//			message="회원 가입 실패";
-//			path="redirect: /member/signtUp";
+	//내가한고 --------------------------------------------------------
+//	//회원가입 (sqlSession.insert()) --> <insert></insert>
 //	
-//		}
-//		
-//		ra.addFlashAttribute("message", message);
+//	//@ModelAttribute vo타입 변수명
+//	@PostMapping("/signUp")
+//	public String signUp(@ModelAttribute Member memberSignUp, RedirectAttributes ra) {
+//	    int result = service.signUp(memberSignUp);
+//	    
+//	    String message=null;
+//	    String path = null;
+//
+//	    if (result > 0 ) { // 회원가입 성공 시
+//	    	message="회원 가입 성공";
+//	        return "redirect:/";
+//	    } else { // 회원가입 실패 시
+//	    	message="회원 가입 실패";
+//	    	path="redirect: /member/signtUp";
+//	    }
+//	    
+//	    ra.addFlashAttribute("message", message);
 //		return path;
-//			
-//		}
+//	}
+	
+	//회원가입 강사님꺼
+	@PostMapping("/signUp")
+	public String signUp(Member inputMember
+						, String[] memberAddress
+						, RedirectAttributes ra) {
+		//커멘드 객체를 이용해서 입력된 회원 정보를 잘 받아옴
+		// 단, 같은 name을 가진 주소나 하나의 문자열로 합쳐서 세팅되어 있음
+		//-> 도로명 주소에 "," 기호가 포함되는 경우가 있어 이를 구분자로 사용할 수 없
 		
+		//String[] memberAddress:
+		// name이 memberAddress인 파라미터의 값을 모두 배열에 담아서 반환
+		inputMember.setMemberAddress(String.join(",,", memberAddress));
 		
+		//String.join("구분자", 배열)
+		//배열을 하나의 문자열로 합치는 메서드
+		//중간에 들어가 구분자를 지정할 수 있다.
+		//[a,b,c] - join  진행 -> "a,,b,,c"
 		
+		if(inputMember.getMemberAddress().equals(",,,,")) {//주소가 입력되지 않은 경우
+			inputMember.setMemberAddress(null); //null로 반환 
+		}
+		
+		//회원가입 서비스 호출
+		int result = service.signUp(inputMember);
+		
+		String message = null;
+		String path = null;
+		
+		if(result > 0) { //회원 가입 성공 
+			message = "회원 가입 성공!!";
+			path="redirect:/"; //메인페이
+		}else{
+			message = "회원 가입 실패 ㅠㅠ";
+			path="redirect:/member/signUp"; //회원가입페이
+		}
+		
+		ra.addFlashAttribute("message", message);
+		return path;
+	}
+	
+
+
+		
+//---회원 1명 조회 내꺼 		
 	
 	
 	//회원 1명 정보 조회(ajax) (sqlSession.selectOne())
@@ -403,19 +410,9 @@ public class MemberController {
 		return oneMem;
 	}
 	
-//	   // 회원 조회
-//	   @ResponseBody
-//	   @GetMapping("/selectOne")
-//	   public Member selectOne(String memberEmail) {
-//	      
-//	      Member mem = service.selectOne(memberEmail); // 돌아오는 값이 멤버 자체이기 때문에 멤버에 담아준다.
-//	      
-//	      //gson
-//	      return new Gson().toJson(mem) ;
-//	      
-//	      //"{'memberEmail' : 'test01@naver.com', 'membernickname' : '테스트 1..'}"
-//	   }
+
 	
+
 	//회원 목록 조회(ajax) (sqlSession.selectList())
 	
 	@ResponseBody

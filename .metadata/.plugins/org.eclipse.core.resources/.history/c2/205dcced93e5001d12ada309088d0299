@@ -1,0 +1,58 @@
+package edu.kh.comm.member.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import edu.kh.comm.member.model.service.MyPageService;
+
+// /member/myPage/profile
+// /member/myPage/info
+// /member/myPage/changPw
+// /member/myPage/secession(탈퇴)
+
+@Controller
+@RequestMapping("/member/myPage")
+public class MyPageController {
+	
+	
+	//MyPageService 연결
+	@Autowired
+	private MyPageService service;
+	
+	//회원 정보 조회 이동
+	@GetMapping("/info")
+	public String info() {
+		return "member/myPage-info"; //jsp 이름
+		
+	}
+	
+	
+	//비밀번호 변경
+	@GetMapping("/changePw")
+	public String changePw() {
+		return "member/myPage-changePw"; //jsp 이름
+		
+	}
+	
+
+	//회원 탈퇴 이동
+	@GetMapping("/secession")
+	public String secession() {
+		return "member/myPage-secession"; //jsp 이름
+		
+	}
+
+	//프로필 변경 이동
+	@GetMapping("/profile")
+	public String profile() {
+		return "member/myPage-profile"; //jsp 이름
+		
+	}
+	
+	
+	
+	
+
+}
